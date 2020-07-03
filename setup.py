@@ -11,7 +11,7 @@ setup(
     description='Manage spark applications and clusters',
     #long_description=open('README.txt').read(),
     install_requires=[
-        "pyspark",
+#        "pyspark",
     ],
 	include_package_data=True,
 	package_data={
