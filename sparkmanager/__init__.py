@@ -16,6 +16,6 @@ def _jupyter_nbextension_paths():
 def _jupyter_server_extension_paths():
     """Used by "jupyter serverextension" command to install web server extension'"""
     return [{
-        "module": "sparkmonitor.serverextension"
+        "module": "sparkmanager.serverextension"
     }]
 
