@@ -28,3 +28,16 @@ Use the command
 ipython --debug -c 'exit()'
 ```
 to find configuration paths for the IPython kernel.
+
+## Docker
+
+You can build a docker image to test the extension with
+```
+docker build . -t sparkmanager
+```
+See the `Dockerfile` for the build instructions.
+
+Run the docker image with
+```
+docker run -p 8888:8888 sparkmanager
+```
