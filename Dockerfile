@@ -8,8 +8,10 @@ RUN mkdir -p /opt/sparkmanager \
 USER $NB_UID
 
 ENV SPARK_MANAGER_DIR /opt/sparkmanager
-RUN git clone https://github.com/stevenstetzler/sparkmanager.git $SPARK_MANAGER_DIR \
- && cd $SPARK_MANAGER_DIR \
+COPY sparkmanager $SPARK_MANAGER_DIR/sparkmanager
+COPY setup.py $SPARK_MANAGER_DIR/.
+#RUN git clone https://github.com/stevenstetzler/sparkmanager.git $SPARK_MANAGER_DIR \
+RUN cd $SPARK_MANAGER_DIR \
  && python -m pip install .
 
 ENV IPYTHONDIR /opt/conda/etc/ipython
@@ -22,5 +24,5 @@ RUN jupyter nbextension install sparkmanager --py --sys-prefix \
 RUN jupyter nbextension list \
  && jupyter serverextension list
 
-#COPY local_cluster $SPARK_MANAGER_DIR/clusters/Local/.
-#COPY kube_cluster $SPARK_MANAGER_DIR/clusters/AWS/.
+COPY local_cluster $SPARK_MANAGER_DIR/clusters/Local/.
+COPY kube_cluster $SPARK_MANAGER_DIR/clusters/AWS/.

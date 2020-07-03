@@ -7,7 +7,13 @@ import getpass
 config = []
 # default_file_path = "/usr/local/Cellar/apache-spark/2.4.5/libexec/conf/spark-defaults.conf"
 default_file_path = "/home/bisso/.sparkmanager/clusters/"
-MANAGER_PATH = os.path.join(*[os.environ['HOME'], ".sparkmanager"])
+
+SPARK_MANAGER_DIR = os.environ.get("SPARK_MANAGER_DIR", None)
+if SPARK_MANAGER_DIR:
+    MANAGER_PATH = SPARK_MANAGER_DIR
+else:
+    MANAGER_PATH = os.path.join(*[os.environ['HOME'], ".sparkmanager"])
+
 CLUSTER_PATH = os.path.join(MANAGER_PATH, "clusters")
 
 defaultConfig = []

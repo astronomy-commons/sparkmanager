@@ -1,0 +1,9 @@
+{
+	"conf": {
+		"spark.driver.cores" : "4",
+		"spark.driver.memory" : "8g",
+		"spark.executor.instances" : 2
+	},
+	"name": "AWS",
+	"type": "kubernetes"
+}

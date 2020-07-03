@@ -11,6 +11,8 @@ define([
 ) {
     "use strict";
 
+    let notebookServerURL = `${window.location.protocol}//${window.location.host}${Jupyter.contents.base_url}`;
+
     var initialize = async function () {
         // var driverMemoryInput = document.createElement("input");
         // driverMemoryInput.id = "driver_memory_input";
@@ -67,7 +69,7 @@ define([
         // };
 
         let selectConfig = document.createElement("select");
-        let listOfConfig = await fetch(`${window.location.protocol}//${window.location.host}/api/all-config`);
+        let listOfConfig = await fetch(`${notebookServerURL}api/all-config`);
         listOfConfig = await listOfConfig.json()
         let configCurrentValue = listOfConfig.data[0]
         let currentUser = listOfConfig.username
@@ -101,7 +103,7 @@ define([
     };
 
     let fetchDefaultConfig = async (currentConfig) => {
-        let response = await fetch(`${window.location.protocol}//${window.location.host}/api/show-config/` + currentConfig);
+        let response = await fetch(`${notebookServerURL}api/show-config/` + currentConfig);
         let config = await response.json();
         console.log("Config printed only from frontend : ", config)
         let username = config.username;
@@ -197,7 +199,7 @@ define([
                     console.log("username: ", username)
                     console.log("ui_proxy_basename ", window.location.host)
                     console.log("spark_port ", msg.content.data.sparkUiPort)
-                    let link = `${window.location.protocol}//${window.location.host}/proxy/${msg.content.data.sparkUiPort}/jobs/`
+                    let link = `${notebookServerURL}proxy/${msg.content.data.sparkUiPort}/jobs/`
                     console.log("link generated " + link)
                     // document.getElementById("loading-text").innerHTML = `<a href="${link}>${link}</a>`
 
@@ -212,10 +214,10 @@ define([
                     // document.getElementById("loading-text").innerHTML = "HELLo"
                 } else {
                     console.log("from jupyterhub")
-                    console.log("username: ", currentUser)
+                    console.log("username: ", username)
                     console.log("ui_proxy_basename ", window.location.host)
                     console.log("spark_port ", msg.content.data.sparkUiPort)
-                    let link = `${window.location.protocol}://${window.location.host}/user/${username}/proxy/${msg.content.data.sparkUiPort}/jobs/`
+                    let link = `${notebookServerURL}proxy/${msg.content.data.sparkUiPort}/jobs/`
                     console.log("link generated " + link)
 
                     var hrefDiv = document.createElement('a');
