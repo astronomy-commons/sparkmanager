@@ -32,7 +32,7 @@ class Config(IPythonHandler):
             with open(config_file_path, 'r') as config_file:
                 config_values = json.load(config_file)
                 print (config_values['conf'])
-                SPARK_TEMPLATE = Template("""import pyspark
+                SPARK_TEMPLATE = Template("""import pyspark 
 spark = (
     pyspark
     .sql
@@ -46,10 +46,29 @@ spark = (
 sc = spark.sparkContext
 """)
             username = getpass.getuser()
-            self.finish({"status": "success"   , "username" : username , "data": SPARK_TEMPLATE.render(conf=config_values['conf'])})
+            self.finish({"status": "success"   , "username" : username ,'cluster_data': config_values ,"data": SPARK_TEMPLATE.render(conf=config_values['conf'])})
 
         else:
             self.finish({"status": "error"})
+
+class UpdateConfig(IPythonHandler):
+    def post(self):
+        body = json.loads(self.request.body)
+        print(body)
+        SPARK_TEMPLATE = Template("""import pyspark
+spark = (
+    pyspark
+    .sql
+    .SparkSession
+    .builder
+    {%- for key, value in conf.items() %}
+    .config("{{ key }}", "{{ value }}")
+    {%- endfor %}
+    .getOrCreate()
+)
+sc = spark.sparkContext
+""")
+        self.finish({"status": "success_updated"   , 'cluster_data': body ,"data": SPARK_TEMPLATE.render(conf=body)})
 
 
 class ConfigAdd(IPythonHandler):
@@ -86,8 +105,12 @@ def load_jupyter_server_extension(nb_server_app):
         web_app.settings['base_url'], '/add-config')
     get_all_config = url_path_join(
         web_app.settings['base_url'], '/api/all-config')
+    update_existing_cluster = url_path_join(
+        web_app.settings['base_url'], '/api/update-config')
 
     web_app.add_handlers(host_pattern, [(show_config_route, Config)])
     web_app.add_handlers(host_pattern, [(add_config_route, ConfigAdd)])
     web_app.add_handlers(host_pattern, [(get_all_config, ConfigAll)])
+    web_app.add_handlers(host_pattern, [(update_existing_cluster, UpdateConfig)])
+
 
