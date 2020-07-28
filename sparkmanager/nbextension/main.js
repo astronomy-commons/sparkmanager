@@ -52,7 +52,7 @@ define([
             comm.send({ 'data': "fetch config data" })
             comm.on_msg(function (msg) {
                 console.log(msg.content.data.log)
-                document.getElementById("showLog").innerHTML = msg.content.data.log
+                // document.getElementById("showLog").innerHTML = msg.content.data.log
 
             })
             document.getElementById("myModal").style.display = "block";
@@ -70,7 +70,7 @@ define([
           </ul>
           <button onclick="this.stopFetchingLogs()">Close</button>
 
-          <p id="cluster_config_content">
+          <p id="cluster_config_content"></p>
           <div id="closeModalBtn"></div>
         </div>
         </div>
@@ -156,31 +156,31 @@ define([
         }
         let cluster_config_tab = `<div><p>THIS IS CLUSTER CONFIG</p></div>`;
 
-        let cluster_status_tab = `<p id="showLog" style="height: 300px; overflow: scroll"></p>`;
+        // let cluster_status_tab = `<p id="showLog" style="height: 300px; overflow: scroll"></p>`;
         let fetchUpdatedConfig = () => {
             let childNodes = document.getElementById("cluster_config_content").childNodes;
+
             let config = {}
             for (let i = 0; i < childNodes.length - 1; i++) {
-                let key = childNodes[i].children[0].innerText;
-                let value = childNodes[i].children[1].value;
-                config[key] = value
+                if(childNodes[i].childNodes.length) {
+                    let key = childNodes[i].children[0].innerText;
+                    let value = childNodes[i].children[1].value;
+                    console.log(key + " : " + value)
+                    config[key] = value
+                }
+                
             }
             return config
         }
         let renderConfiguration = () => {
             let config = JSON.parse(sessionStorage.getItem("cluster_data"));
             Object.keys(config).map(eachKey => {
-                document.getElementById("cluster_config_content").innerHTML += `<div class="row">
-                <div class="col-md-6">
+                document.getElementById("cluster_config_content").innerHTML += `
                 <div class="input-group" style="margin: 10px">
                 <span class="input-group-addon" id="basic-addon1">${eachKey}</span>
                 <input type="text" class="form-control" placeholder=${eachKey} value=${config[eachKey]}>
               </div>
-                </div>
-                <div class="col-md-6">
-                <p id="showLog" style="height: 300px; overflow: scroll"></p>
-                </div>
-                </div>`;
+                `;
             })
 
             let updateConfigButton = document.createElement('button');
@@ -238,7 +238,7 @@ define([
                 document.getElementById("cluster_config_tab").classList.remove("active")
             }
             document.getElementById("cluster_status_tag").classList.add("active")
-            document.getElementById("cluster_config_content").innerHTML = cluster_status_tab
+            // document.getElementById("cluster_config_content").innerHTML = cluster_status_tab
 
         }
 
@@ -247,7 +247,7 @@ define([
                 document.getElementById("cluster_status_tag").classList.remove("active")
             }
             document.getElementById("cluster_config_tab").classList.add("active")
-            document.getElementById("cluster_config_content").innerHTML = cluster_config_tab
+            // document.getElementById("cluster_config_content").innerHTML = cluster_config_tab
             renderConfiguration()
         }
 
