@@ -4,50 +4,34 @@ import os
 import json
 from jinja2 import Template
 import getpass
-config = []
-# default_file_path = "/usr/local/Cellar/apache-spark/2.4.5/libexec/conf/spark-defaults.conf"
-default_file_path = "/home/bisso/.sparkmanager/clusters/"
-
-SPARK_MANAGER_DIR = os.environ.get("SPARK_MANAGER_DIR", None)
-if SPARK_MANAGER_DIR:
-    MANAGER_PATH = SPARK_MANAGER_DIR
-else:
-    MANAGER_PATH = os.path.join(*[os.environ['HOME'], ".sparkmanager"])
-
-CLUSTER_PATH = os.path.join(MANAGER_PATH, "clusters")
-
-defaultConfig = []
+from . import config
 
 class Config(IPythonHandler):
     def get(self,config_name):
         print(self.request)
         print("config_name")
         print(config_name)
-        list_of_cluster_dirs = os.listdir(CLUSTER_PATH)
         config_values = {}
-        if config_name in list_of_cluster_dirs:
-            config_file_path = os.path.join(CLUSTER_PATH, config_name, "cluster.json")
-            print(os.listdir(CLUSTER_PATH))
-            print(config_file_path)
-            with open(config_file_path, 'r') as config_file:
-                config_values = json.load(config_file)
-                print (config_values['conf'])
-                SPARK_TEMPLATE = Template("""import pyspark 
+        
+        cluster_configs = config.get_cluster_configs()
+        if config_name in cluster_configs:
+            config_values = cluster_configs[config_name]
+            print (config_values['conf'])
+            SPARK_TEMPLATE = Template("""import pyspark 
 spark = (
-    pyspark
-    .sql
-    .SparkSession
-    .builder
-    {%- for key, value in conf.items() %}
-    .config("{{ key }}", "{{ value }}")
-    {%- endfor %}
-    .getOrCreate()
+pyspark
+.sql
+.SparkSession
+.builder
+{%- for key, value in conf.items() %}
+.config("{{ key }}", "{{ value }}")
+{%- endfor %}
+.getOrCreate()
 )
 sc = spark.sparkContext
 """)
             username = getpass.getuser()
             self.finish({"status": "success"   , "username" : username ,'cluster_data': config_values ,"data": SPARK_TEMPLATE.render(conf=config_values['conf'])})
-
         else:
             self.finish({"status": "error"})
 
@@ -84,8 +68,11 @@ class ConfigAdd(IPythonHandler):
 class ConfigAll(IPythonHandler):
     def get(self):
         username = getpass.getuser()
-        list_of_cluster_dirs = os.listdir(CLUSTER_PATH)
-        self.finish({"status": "success", "username" : username , "data": list_of_cluster_dirs})
+        
+        cluster_configs = config.get_cluster_configs()
+        cluster_names  = list(cluster_configs.keys())
+        
+        self.finish({"status": "success", "username" : username , "data": cluster_names})
 
     
 def load_jupyter_server_extension(nb_server_app):
