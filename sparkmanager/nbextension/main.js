@@ -11,6 +11,8 @@ define([
 ) {
     "use strict";
 
+    let notebookServerURL = `${window.location.protocol}//${window.location.host}${Jupyter.contents.base_url}`;
+
     var initialize = async function () {
         var sparkLogo = document.createElement('img');
         sparkLogo.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Apache_Spark_logo.svg/1200px-Apache_Spark_logo.svg.png"
@@ -24,7 +26,7 @@ define([
 
         let selectConfig = document.createElement("select");
         selectConfig.style = "height: 25px; width: 90px; font-size: 14px"
-        let listOfConfig = await fetch(`${window.location.protocol}//${window.location.host}/api/all-config`);
+        let listOfConfig = await fetch(`${notebookServerURL}api/all-config`);
         listOfConfig = await listOfConfig.json()
         let configCurrentValue = listOfConfig.data[0]
         let currentUser = listOfConfig.username
@@ -203,7 +205,7 @@ define([
                     }
                 }
                 console.log("settings ", settings)
-                const response = await fetch(`${window.location.protocol}//${window.location.host}/api/update-config`, settings);
+                const response = await fetch(`${notebookServerURL}api/update-config`, settings);
                 // const response = await fetch(`https://jsonplaceholder.typicode.com/posts`, settings);
                 if (!response.ok) throw Error(response.message);
 
@@ -275,7 +277,7 @@ define([
     };
 
     let fetchDefaultConfig = async (currentConfig) => {
-        let response = await fetch(`${window.location.protocol}//${window.location.host}/api/show-config/` + currentConfig);
+        let response = await fetch(`${notebookServerURL}api/show-config/` + currentConfig);
         let config = await response.json();
         console.log("Config printed only from frontend : ", config)
         let username = config.username;
@@ -309,7 +311,7 @@ define([
                     console.log("username: ", username)
                     console.log("ui_proxy_basename ", window.location.host)
                     console.log("spark_port ", msg.content.data.sparkUiPort)
-                    let link = `${window.location.protocol}//${window.location.host}/proxy/${msg.content.data.sparkUiPort}/jobs/`
+                    let link = `${notebookServerURL}proxy/${msg.content.data.sparkUiPort}/jobs/`
                     console.log("link generated " + link)
                     // document.getElementById("loading-text").innerHTML = `<a href="${link}>${link}</a>`
 
@@ -327,7 +329,7 @@ define([
                     console.log("username: ", currentUser)
                     console.log("ui_proxy_basename ", window.location.host)
                     console.log("spark_port ", msg.content.data.sparkUiPort)
-                    let link = `${window.location.protocol}://${window.location.host}/user/${username}/proxy/${msg.content.data.sparkUiPort}/jobs/`
+                    let link = `${notebookServerURL}proxy/${msg.content.data.sparkUiPort}/jobs/`
                     console.log("link generated " + link)
                     var hrefDiv = document.createElement('a');
                     var linkText = document.createTextNode(link);
