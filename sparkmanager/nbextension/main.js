@@ -60,9 +60,9 @@ define([
         };
 
         let settingsModal = `
-        <div id="myModal" class="modal" data-keyboard="false" data-backdrop="static">
+        <div id="myModal" class="config-modal" data-keyboard="false" data-backdrop="static">
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="config-modal-content">
             <span class="close">&times;</span>
             <ul class="nav nav-tabs">
             <li role="presentation" class="active" id="cluster_config_tab"><a href="#">Configuration</a></li>
@@ -93,7 +93,7 @@ define([
 
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = `.modal {
+        style.innerHTML = `.config-modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
             z-index: 1; /* Sit on top */
@@ -107,7 +107,7 @@ define([
           }
           
           /* Modal Content/Box */
-          .modal-content {
+          .config-modal-content {
             background-color: #fefefe;
             margin: 15% auto; /* 15% from the top and centered */
             padding: 20px;
@@ -178,7 +178,7 @@ define([
                 document.getElementById("cluster_config_content").innerHTML += `
                 <div class="input-group" style="margin: 10px">
                 <span class="input-group-addon" id="basic-addon1">${eachKey}</span>
-                <input type="text" class="form-control" placeholder=${eachKey} value=${config[eachKey]}>
+                <input type="text" class="form-control" placeholder=${eachKey} value=${config[eachKey]} >
               </div>
                 `;
             })
@@ -260,16 +260,23 @@ define([
 
     // will be called when the nbextension is loaded
     function load_extension() {
-        Jupyter.keyboard_manager.disable()
-        const comm = Jupyter.notebook.kernel.comm_manager.new_comm('get_cluster_config', { 'foo': 6 })
-        // Send data
-        comm.send({ 'data': "fetch config data" })
-        comm.on_msg(function (msg) {
-            console.log("CLUSTER CONFIG SAVED IN KERNMEL ", msg.content.data.clusterConfig)
-            sessionStorage.setItem("cluster_data", JSON.stringify(msg.content.data.clusterConfig))
-            Jupyter.notebook.config.loaded.then(initialize);
-        })
-
+        console.log("Jupyter.notebook.kernel " , Jupyter.notebook.kernel)
+        if(Jupyter.notebook.kernel){
+            console.log("Kernel connected...")
+            const comm = Jupyter.notebook.kernel.comm_manager.new_comm('get_cluster_config', { 'foo': 6 })
+            // Send data
+            comm.send({ 'data': "fetch config data" })
+            comm.on_msg(function (msg) {
+                console.log("CLUSTER CONFIG SAVED IN KERNMEL ", msg.content.data.clusterConfig)
+                sessionStorage.setItem("cluster_data", JSON.stringify(msg.content.data.clusterConfig))
+                Jupyter.notebook.config.loaded.then(initialize);
+            })
+    
+        } else {
+            console.log("Reinitializing...")
+            setTimeout(() => { load_extension() }, 500);
+        }
+        
 
 
     };

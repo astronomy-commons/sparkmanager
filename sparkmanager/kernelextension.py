@@ -14,6 +14,12 @@ def load_ipython_extension(ipython):
     # The `ipython` argument is the currently active `InteractiveShell`
     # instance, which can be used in any way. This allows you to register
     # new magics or aliases, for example.
+    def run_spark_start_script(msg,comm):
+        ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
+        ipython.ex(msg['content']['data']['data'])
+        sparkUiUrl = ipython.ev("sc.uiWebUrl")
+        comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+
 
     def create_cluster_func(comm, open_msg):
         # comm is the kernel Comm instance
@@ -21,8 +27,8 @@ def load_ipython_extension(ipython):
         # Register handler for later messages
         @comm.on_msg
         def _recv(msg):
-            print("RECEIVED")
-            print(msg)
+            t1 = threading.Thread(target=run_spark_start_script, args=[msg,comm])
+            t1.start()
             # try:
             #     sparkExist = ipython.ev('spark')
             #     ipython.ex("spark.stop()")
@@ -30,11 +36,7 @@ def load_ipython_extension(ipython):
             #     print("spark does not exist")
 
 
-            ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-            # ipython.ex(SPARK_TEMPLATE.render())
-            ipython.ex(msg['content']['data']['data'])
-            sparkUiUrl = ipython.ev("sc.uiWebUrl")
-            comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+            
         # Send data to the frontend on creation
 
     def update_cluster_func(comm, open_msg):
