@@ -36,11 +36,8 @@ def load_ipython_extension(ipython):
                 print("spark does not exist")
 
             try:
-                ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-                # ipython.ex(SPARK_TEMPLATE.render())
-                ipython.ex(msg['content']['data']['data'])
-                sparkUiUrl = ipython.ev("sc.uiWebUrl")
-                comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+                x = threading.Thread(target=run_spark_start_script, args=(msg,comm,))
+                x.start()
             except Exception as e:
                 comm.send({'data': str(e) , 'status' : 'creation_failed' , 'sparkUiPort' : "N/A"})
 
