@@ -14,6 +14,12 @@ def load_ipython_extension(ipython):
     # The `ipython` argument is the currently active `InteractiveShell`
     # instance, which can be used in any way. This allows you to register
     # new magics or aliases, for example.
+    def run_spark_start_script(msg,comm):
+        ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
+        ipython.ex(msg['content']['data']['data'])
+        sparkUiUrl = ipython.ev("sc.uiWebUrl")
+        comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+
 
     def create_cluster_func(comm, open_msg):
         # comm is the kernel Comm instance
@@ -23,18 +29,20 @@ def load_ipython_extension(ipython):
         def _recv(msg):
             print("RECEIVED")
             print(msg)
-            # try:
-            #     sparkExist = ipython.ev('spark')
-            #     ipython.ex("spark.stop()")
-            # except:
-            #     print("spark does not exist")
+            try:
+                sparkExist = ipython.ev('spark')
+                ipython.ex("spark.stop()")
+            except:
+                print("spark does not exist")
+
+            try:
+                x = threading.Thread(target=run_spark_start_script, args=(msg,comm,))
+                x.start()
+            except Exception as e:
+                comm.send({'data': str(e) , 'status' : 'creation_failed' , 'sparkUiPort' : "N/A"})
 
 
-            ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-            # ipython.ex(SPARK_TEMPLATE.render())
-            ipython.ex(msg['content']['data']['data'])
-            sparkUiUrl = ipython.ev("sc.uiWebUrl")
-            comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+            
         # Send data to the frontend on creation
 
     def update_cluster_func(comm, open_msg):
@@ -43,14 +51,22 @@ def load_ipython_extension(ipython):
         # Register handler for later messages
         @comm.on_msg
         def _recv(msg):
+            try:
+                sparkExist = ipython.ev('spark')
+                ipython.ex("spark.stop()")
+            except:
+                print("spark does not exist")
             print("RECEIVED UPDATE REQ")
             print(msg)
-            ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-            ipython.ex("spark.stop()")
-            ipython.ex(msg['content']['data']['data'])
-            comm.send({'status' : 'updated_success' , 'cluster_data' : msg['content']['data']['cluster_data']})
-            ipython.ex("test = 10")
-            
+            try:
+                ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
+                ipython.ex("spark.stop()")
+                ipython.ex(msg['content']['data']['data'])
+                comm.send({'status' : 'updated_success' , 'cluster_data' : msg['content']['data']['cluster_data']})
+            except Exception as e:
+                comm.send({'data': str(e) , 'status' : 'updation_failed'})
+
+
     def get_cluster_config_func(comm, open_msg):
         @comm.on_msg
         def _recv(msg):
