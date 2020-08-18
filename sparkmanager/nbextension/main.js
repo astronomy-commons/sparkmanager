@@ -48,6 +48,7 @@ define([
         settingsButton.innerHTML = `<img id ="spark_config_logo" disabled=${JSON.parse(sessionStorage.getItem("cluster_data")) ? false :  true} src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Settings_app_icon.png/480px-Windows_Settings_app_icon.png" style="height: 20px; width: 20px"/>`;
         settingsButton.onclick = function () {
             console.log("Clicked showSettingsModal")
+            Jupyter.keyboard_manager.disable()
             document.getElementById("myModal").style.display = "block";
             showSettingsModal()
         };
