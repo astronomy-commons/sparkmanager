@@ -2,6 +2,7 @@ from jupyter_core.paths import jupyter_config_path
 import os
 from glob import glob
 import json
+from pyspark import SparkConf
 
 def sparkmanager_config_path():
     """
@@ -51,3 +52,22 @@ def get_cluster_configs():
         name = config_values.get('name')
         configs[name] = config_values
     return configs
+
+def _merge_conf(conf_1, conf_2):
+    ret_conf = SparkConf()
+    _fill_conf(dict(conf_1.getAll()), ret_conf)
+    _fill_conf(dict(conf_2.getAll()), ret_conf)
+    return ret_conf
+
+def _fill_conf(d, conf):
+    for key, value in d.items():
+        conf.set(key, value)
+
+def _get_conf(path):
+    with open(path, "r") as f:
+        cluster_info = json.load(f)['conf']
+        conf = SparkConf()
+
+        _fill_conf(cluster_info, conf)
+
+        return conf
