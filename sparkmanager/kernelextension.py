@@ -39,7 +39,7 @@ def load_ipython_extension(ipython):
                 x = threading.Thread(target=run_spark_start_script, args=(msg,comm,))
                 x.start()
             except Exception as e:
-                comm.send({'data': str(e) , 'status' : 'creation_failed' , 'sparkUiPort' : "N/A"})
+                comm.send({'data': str(e) , 'status' : 'creation_failed: ' + str(e) , 'sparkUiPort' : "N/A"})
 
 
             
@@ -51,20 +51,15 @@ def load_ipython_extension(ipython):
         # Register handler for later messages
         @comm.on_msg
         def _recv(msg):
-            try:
-                sparkExist = ipython.ev('spark')
-                ipython.ex("spark.stop()")
-            except:
-                print("spark does not exist")
             print("RECEIVED UPDATE REQ")
             print(msg)
             try:
                 ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-                ipython.ex("spark.stop()")
+                ipython.ex("spark.stop(); del spark; del sc")
                 ipython.ex(msg['content']['data']['data'])
                 comm.send({'status' : 'updated_success' , 'cluster_data' : msg['content']['data']['cluster_data']})
             except Exception as e:
-                comm.send({'data': str(e) , 'status' : 'updation_failed'})
+                comm.send({'data': str(e) , 'status' : 'updation_failed: ' + str(e)})
 
 
     def get_cluster_config_func(comm, open_msg):

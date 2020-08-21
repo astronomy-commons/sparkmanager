@@ -6,6 +6,18 @@ from jinja2 import Template
 import getpass
 from . import config
 
+SPARK_TEMPLATE = Template("""from sparkmanager import SparkSession 
+spark = (
+SparkSession
+.builder
+{%- for key, value in conf.items() %}
+.config("{{ key }}", "{{ value }}")
+{%- endfor %}
+.getOrCreate()
+)
+sc = spark.sparkContext
+""")
+
 class Config(IPythonHandler):
     def get(self,config_name):
         print(self.request)
@@ -17,19 +29,6 @@ class Config(IPythonHandler):
         if config_name in cluster_configs:
             config_values = cluster_configs[config_name]
             print (config_values['conf'])
-            SPARK_TEMPLATE = Template("""import pyspark 
-spark = (
-pyspark
-.sql
-.SparkSession
-.builder
-{%- for key, value in conf.items() %}
-.config("{{ key }}", "{{ value }}")
-{%- endfor %}
-.getOrCreate()
-)
-sc = spark.sparkContext
-""")
             username = getpass.getuser()
             self.finish({"status": "success"   , "username" : username ,'cluster_data': config_values ,"data": SPARK_TEMPLATE.render(conf=config_values['conf'])})
         else:
@@ -39,25 +38,11 @@ class UpdateConfig(IPythonHandler):
     def post(self):
         body = json.loads(self.request.body)
         print(body)
-        SPARK_TEMPLATE = Template("""import pyspark
-spark = (
-    pyspark
-    .sql
-    .SparkSession
-    .builder
-    {%- for key, value in conf.items() %}
-    .config("{{ key }}", "{{ value }}")
-    {%- endfor %}
-    .getOrCreate()
-)
-sc = spark.sparkContext
-""")
         self.finish({"status": "success_updated"   , 'cluster_data': body ,"data": SPARK_TEMPLATE.render(conf=body)})
 
 
 class ConfigAdd(IPythonHandler):
     def get(self):
-
         key = json.loads(self.request.body)["id"]
         configObject = {}
         configObject[key] = json.loads(self.request.body)
