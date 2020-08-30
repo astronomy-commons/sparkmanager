@@ -1,4 +1,4 @@
-# Google Summer of Code 2017 Final Report
+# Google Summer of Code 2020 Final Report
 ## SparkManager --- A Jupyter Notebook Extension
 
 ## Introduction 
@@ -71,3 +71,17 @@ The "spark" variable is injected into the kernel and now can be accessed and use
 ### 4. The spark UI link is generated.
 
 Once the user clicks on the "UI" button the user is taken to the spark web UI interface
+
+## How it works
+
+Please visit: 
+
+## Installation
+
+Please visit
+
+## Future work
+
+1. Make the extension for Jupyter Lab
+2. Integrate real time logs from the Kernel
+3. Add tooltips for buttons
