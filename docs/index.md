@@ -78,7 +78,7 @@ Please visit: <a href="https://github.com/astronomy-commons/sparkmanager/blob/ma
 
 ## Installation
 
-Please visit
+Please visit <a href="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/installation.md">Installation</a>
 
 ## Future work
 
