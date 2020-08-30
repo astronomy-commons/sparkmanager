@@ -74,7 +74,7 @@ Once the user clicks on the "UI" button the user is taken to the spark web UI in
 
 ## How it works
 
-Please visit: 
+Please visit: <a href="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/how_it_works.md"> How It Works </a>
 
 ## Installation
 
