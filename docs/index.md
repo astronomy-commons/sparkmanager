@@ -27,6 +27,17 @@ spark = (
 sc = spark.sparkContext
 </pre>
 
-The extension provides a well-designed interface that could replace the programmatic creation of (or connection to) a Spark cluster with simple UI elements. 
+The extension provides a well-designed interface within Jupyter Notebook that could replace the programmatic creation of (or connection to) a Spark cluster with simple UI elements. 
+
+![Initial state of the extension](https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/initial_state.png?raw=true "Title")
+
 
 This extension will thus enable all of the astronomy community to easily manage their Apache Spark clusters via an easy to use Jupyter Notebook extension called “SparkManager”
+
+
+## Features 
+
+### Create a spark cluster by the click of a few buttons
+
+![Initial state of the extension](https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/creating_state.png?raw=true "Title")
+
