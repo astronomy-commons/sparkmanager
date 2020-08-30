@@ -33,7 +33,7 @@ The extension provides a well-designed interface within Jupyter Notebook that co
 <kbd>
 <img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/initial_state.png" style="border: 1px solid black"/>
 </kbd>
-
+<br/>
 
 This extension will thus enable all of the astronomy community to easily manage their Apache Spark clusters via an easy to use Jupyter Notebook extension called “SparkManager”
 
@@ -46,6 +46,28 @@ This extension will thus enable all of the astronomy community to easily manage 
 <kbd>
 <img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/creating_state.png" style="border: 1px solid black"/>
 </kbd>
-
+<br/>
 With the extension one can create pyspark clusters locally or on kubernetes based on the config files that are selected. 
 The drop down allows the user to select the config file he wants to load and based on that config file the cluster is created. 
+
+### 2. Configure or update a cluster. 
+
+<kbd>
+<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/config_editing.png" style="border: 1px solid black"/>
+</kbd>
+<br/>
+
+Once the cluster is created with the existing configurations users can also update the memory/core and other configurations! 
+
+### 3. "spark" vgariable is injected into the jupyter notebook 
+
+<kbd>
+<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/spark_injected.png" style="border: 1px solid black"/>
+</kbd>
+<br/>
+
+The "spark" variable is injected into the kernel.
+
+### 4. The spark UI link is generated.
+
+Once the user clicks on the "UI" button the user is taken to the spark web UI interface
