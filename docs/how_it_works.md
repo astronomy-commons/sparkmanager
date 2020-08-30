@@ -17,4 +17,8 @@ Step 6: The serverextension fetches all the config details of the config that is
 Step 7: Then once it has the required config fetched from the config dir it converts it into a Jinja Template and sends the jinja template to the front end via API <br/>
 Step 8: Once the front end receives the Jinja template of the required config it sends the Jinja Template to the Kernel Extension via Sockets <br/>
 Step 9: The kernel extension executes the jinja template to start the spark cluster that it receives from the Jupyter front end. <br/>
+<br/>
 
+<i>
+ Select Config -> Click the Start Spark Button -> Config Data fetched in backend -> Config data converted to Jinja Template in Backend -> Jinja Template Sent from backend to front end -> Jinja sent from front end to Kernel → Jinja template gets executed in Kernel to start the cluster!
+ </i>
