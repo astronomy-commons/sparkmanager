@@ -15,10 +15,24 @@ def load_ipython_extension(ipython):
     # instance, which can be used in any way. This allows you to register
     # new magics or aliases, for example.
     def run_spark_start_script(msg,comm):
-        ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-        ipython.ex(msg['content']['data']['data'])
-        sparkUiUrl = ipython.ev("sc.uiWebUrl")
-        comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+        try:
+            ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
+            ipython.ex(msg['content']['data']['data'])
+            sparkUiUrl = ipython.ev("sc.uiWebUrl")
+            comm.send({'data': msg['content']['data'] , 'status' : 'created_success' , 'sparkUiPort' : sparkUiUrl[-4:]})
+        except Exception as e:
+            comm.send({'data': str(e) , 'status' : 'creation_failed: ' + str(e) , 'sparkUiPort' : "N/A"})
+    
+    def run_spark_update_script(msg,comm):
+        try:
+
+            ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
+            ipython.ex("spark.stop(); del spark; del sc")
+            ipython.ex(msg['content']['data']['data'])
+            comm.send({'status' : 'updated_success' , 'cluster_data' : msg['content']['data']['cluster_data']})
+        except Exception as e:
+            comm.send({'data': str(e) , 'status' : 'updation_failed: ' + str(e)})
+
 
 
     def create_cluster_func(comm, open_msg):
@@ -35,13 +49,8 @@ def load_ipython_extension(ipython):
             except:
                 print("spark does not exist")
 
-            try:
-                x = threading.Thread(target=run_spark_start_script, args=(msg,comm,))
-                x.start()
-            except Exception as e:
-                comm.send({'data': str(e) , 'status' : 'creation_failed: ' + str(e) , 'sparkUiPort' : "N/A"})
-
-
+            x = threading.Thread(target=run_spark_start_script, args=(msg,comm,))
+            x.start()
             
         # Send data to the frontend on creation
 
@@ -53,13 +62,8 @@ def load_ipython_extension(ipython):
         def _recv(msg):
             print("RECEIVED UPDATE REQ")
             print(msg)
-            try:
-                ipython.ex('clusterConfig = ' + str(msg['content']['data']['cluster_data']))
-                ipython.ex("spark.stop(); del spark; del sc")
-                ipython.ex(msg['content']['data']['data'])
-                comm.send({'status' : 'updated_success' , 'cluster_data' : msg['content']['data']['cluster_data']})
-            except Exception as e:
-                comm.send({'data': str(e) , 'status' : 'updation_failed: ' + str(e)})
+            x = threading.Thread(target=run_spark_update_script, args=(msg,comm,))
+            x.start()
 
 
     def get_cluster_config_func(comm, open_msg):

@@ -19,13 +19,15 @@ define([
         sparkLogo.style = "height: 33px ; width: 60px; margin-left: 10px; padding: 5px";
         var fetchDefaultConfigButton = document.createElement('button');
         fetchDefaultConfigButton.innerHTML = 'Start';
+        fetchDefaultConfigButton.classList.add("btn");
+
         fetchDefaultConfigButton.id = "start_spark_button"
         fetchDefaultConfigButton.onclick = function () {
             fetchDefaultConfig(configCurrentValue)
         };
 
         let selectConfig = document.createElement("select");
-        selectConfig.style = "height: 25px; width: 90px; font-size: 14px"
+        selectConfig.style = "height: 23px; width: 90px; font-size: 14px"
         let listOfConfig = await fetch(`${notebookServerURL}api/all-config`);
         listOfConfig = await listOfConfig.json()
         let configCurrentValue = listOfConfig.data[0]
@@ -47,7 +49,9 @@ define([
         loadingText.id = "loading-text"
 
         let settingsButton = document.createElement('button');
-        settingsButton.innerHTML = `<img id ="spark_config_logo" disabled=${JSON.parse(sessionStorage.getItem("cluster_data")) ? false :  true} src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Settings_app_icon.png/480px-Windows_Settings_app_icon.png" style="height: 20px; width: 20px"/>`;
+        settingsButton.innerHTML = `<img id ="spark_config_logo" disabled=${JSON.parse(sessionStorage.getItem("cluster_data")) ? false :  true} src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Settings_app_icon.png/480px-Windows_Settings_app_icon.png" style="height: 16px;"/>`;
+        settingsButton.classList.add("btn");
+        settingsButton.style="margin-left: 5px";
         settingsButton.onclick = function () {
             console.log("Clicked showSettingsModal")
             Jupyter.keyboard_manager.disable()
@@ -114,19 +118,22 @@ define([
 
         let configDisplay = document.createElement('button');
         configDisplay.id = "config_display"
-        configDisplay.style = "margin-right: 5px"
+        configDisplay.style = "margin-left: 5px"
+        configDisplay.classList.add("btn");
+
         configDisplay.innerHTML = `Cores: ${JSON.parse(sessionStorage.getItem("cluster_data")) ? JSON.parse(sessionStorage.getItem("cluster_data"))['spark.driver.cores'] : 'N/A'} | Memory : ${sessionStorage.getItem("cluster_data") ? JSON.parse(sessionStorage.getItem("cluster_data"))['spark.driver.memory'] : 'N/A'}`
 
         let sparkUiButton = document.createElement('button');
         sparkUiButton.id = "spark_ui_display"
         sparkUiButton.innerHTML = "UI"
         sparkUiButton.style = " display: none"
+        sparkUiButton.classList.add("btn")
         sparkUiButton.onclick = function () {
             window.open(sessionStorage.getItem("sparkLink"), "_blank");
 
         };
 
-       Jupyter.toolbar.element.append(sparkLogo, fetchDefaultConfigButton, selectConfig, configDisplay, settingsButton, sparkUiButton, loadingText, settingsModal);
+       Jupyter.toolbar.element.append(sparkLogo, selectConfig ,fetchDefaultConfigButton, configDisplay, settingsButton, sparkUiButton, loadingText, settingsModal);
 
         var modal = document.getElementById("myModal");
         var span = document.getElementsByClassName("close")[0];
@@ -179,6 +186,9 @@ define([
             updateConfigButton.innerHTML = "Update"
 
             updateConfigButton.onclick = async function () {
+                document.getElementById("config_update").innerHTML = "Updating...";
+                document.getElementById("config_update").disabled = true;
+                document.getElementById("config_update").style = "cursor: not-allowed";
 
                 let updatedConfig = fetchUpdatedConfig()
                 console.log("updatedConfig ", updatedConfig)
@@ -210,10 +220,18 @@ define([
                         if(msg.content.data.status == "updated_success") {
                             sessionStorage.setItem("cluster_data", JSON.stringify(msg.content.data.cluster_data))
                             console.log("UPDATE COMM CONNECTED ", msg.content.data.status)
+                            document.getElementById("config_update").innerHTML="Update";
+                            document.getElementById("config_update").disabled=false;
+                            document.getElementById("config_update").style = "cursor: pointer";
+                            alert("Update Success")
+
                             document.getElementById("config_display").innerHTML = `Cores: ${JSON.parse(sessionStorage.getItem("cluster_data")) ? JSON.parse(sessionStorage.getItem("cluster_data"))['spark.driver.cores'] : 'N/A'} | Memory : ${JSON.parse(sessionStorage.getItem("cluster_data")) ? JSON.parse(sessionStorage.getItem("cluster_data"))['spark.driver.memory'] : 'N/A'}`
                         } else {
                             alert("Updating failed. Please check values")
                             console.log("UPDATE COMM CONNECTED ", msg.content.data.status)
+                            document.getElementById("config_update").innerHTML="Update";
+                            document.getElementById("config_update").disabled=false;
+                            document.getElementById("config_update").style = "cursor: pointer";
 
                         }
 
