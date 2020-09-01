@@ -62,7 +62,7 @@ Once the cluster is created with the existing configurations users can also upda
 ### 3. "spark" variable is injected into the jupyter notebook 
 
 <kbd>
-<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/spark_injected.png" style="border: 1px solid black"/>
+<img src="images/spark_injected.png" style="border: 1px solid black"/>
 </kbd>
 <br/>
 
