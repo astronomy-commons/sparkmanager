@@ -31,7 +31,7 @@ The extension provides a well-designed interface within Jupyter Notebook that co
 
 
 <kbd>
-<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/initial_state.png" style="border: 1px solid black"/>
+<img src="images/initial_state.png" style="border: 1px solid black"/>
 </kbd>
 <br/>
 
@@ -44,7 +44,7 @@ This extension will thus enable all of the astronomy community to easily manage 
 
 
 <kbd>
-<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/creating_state.png" style="border: 1px solid black"/>
+<img src="images/creating_state.png" style="border: 1px solid black"/>
 </kbd>
 <br/>
 With the extension one can create pyspark clusters locally or on kubernetes based on the config files that are selected. 
@@ -53,7 +53,7 @@ The drop down allows the user to select the config file he wants to load and bas
 ### 2. Configure or update a cluster. 
 
 <kbd>
-<img src="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/images/config_editing.png" style="border: 1px solid black"/>
+<img src="images/config_editing.png" style="border: 1px solid black"/>
 </kbd>
 <br/>
 
@@ -74,11 +74,11 @@ Once the user clicks on the "UI" button the user is taken to the spark web UI in
 
 ## How it works
 
-Please visit: <a href="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/how_it_works.md"> How It Works </a>
+Please visit: <a href="how_it_works.md"> How It Works </a>
 
 ## Installation
 
-Please visit <a href="https://github.com/astronomy-commons/sparkmanager/blob/master/docs/installation.md">Installation</a>
+Please visit <a href="installation.md">Installation</a>
 
 ## Future work
 
