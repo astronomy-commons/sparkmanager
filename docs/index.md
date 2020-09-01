@@ -74,11 +74,11 @@ Once the user clicks on the "UI" button the user is taken to the spark web UI in
 
 ## How it works
 
-Please visit: <a href="how_it_works.md"> How It Works </a>
+Please visit: <a href="how_it_works.html"> How It Works </a>
 
 ## Installation
 
-Please visit <a href="installation.md">Installation</a>
+Please visit <a href="installation.html">Installation</a>
 
 ## Future work
 
