@@ -1,0 +1,138 @@
+
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SparkSession
+from pyspark.java_gateway import launch_gateway
+import tempfile
+import time
+import json
+import os
+
+class SparkApplication():
+    def __init__(self, conf=None):
+        self._conf = conf
+        conf = conf or SparkConf()
+        self._conf = conf
+
+    def getConf(self):
+        return self.sc.getConf()
+
+    def start(self):
+        conf = self._conf
+        sc = SparkContext(conf=conf).getOrCreate()
+        self.sc = sc
+        return sc
+
+    def stop(self):
+        sc = self.sc
+        proc = sc._gateway.proc
+
+        sc.stop()
+
+        gateway = sc._gateway
+        jvm = sc._jvm
+
+        gateway.close()
+
+        del gateway
+        del jvm
+
+        SparkContext._gateway = None
+        SparkContext._jvm = None
+
+        proc.terminate()
+        proc.wait()
+
+        del sc
+
+        return
+
+    def restart(self):
+        self.stop()
+        return self.start()
+
+class SparkException(Exception):
+    pass
+
+def _sparkmanager_launch_gateway(conf=None, popen_kwargs=None):
+    # make temporary file on disk
+    fd, log_path = tempfile.mkstemp()
+
+    gateway = None
+
+    # open temporary file for writing
+    with open(log_path, "r+") as log:
+        # configure Python to pipe the standard error to this file
+        popen_kwargs = {} if popen_kwargs is None else popen_kwargs
+        popen_kwargs['stderr'] = log
+
+        try:
+            # call pyspark.java_gateway.launch_gateway
+            # with the new popen_kwargs
+            gateway = launch_gateway(conf=conf, popen_kwargs=popen_kwargs)
+            return gateway
+        except Exception as e:
+            # if an error occurs, construct an error message from the temporary log file
+            log.seek(0)
+            error_message = "Error in spark-submit: {exception}\nLogs: \n\t{log}".format(
+                exception=str(e), 
+                log="\t".join(log.readlines()),
+            )
+            # raise a new exception
+            raise SparkException(error_message)
+
+def _fill_conf(d, conf):
+    for key, value in d.items():
+        conf.set(key, value)
+
+def make_conf(cluster):
+    cluster_file = cluster.file
+    with open(cluster_file, "r") as f:
+        cluster_info = json.load(f)['conf']
+        conf = SparkConf()
+
+        _fill_conf(cluster_info, conf)
+
+        return conf
+
+def merge_conf(conf_1, conf_2):
+    ret_conf = SparkConf()
+    _fill_conf(dict(conf_1.getAll()), ret_conf)
+    _fill_conf(dict(conf_2.getAll()), ret_conf)
+    return ret_conf
+    
+def set_conf_dir(cluster):
+    conf_dir = os.path.join(os.path.dirname(cluster), "conf")
+    print("Setting SPARK_CONF_DIR={}".format(conf_dir))
+    os.environ['SPARK_CONF_DIR'] = conf_dir
+
+def make_application(cluster, conf=None):
+    set_conf_dir(cluster)
+    cluster_conf = make_conf(cluster)
+    conf = conf or SparkConf()
+    app_conf = merge_conf(cluster_conf, conf)
+    print("Making application with conf:", app_conf.getAll())
+
+    try:
+        sc = SparkContext(conf=app_conf).getOrCreate()
+        return sc
+    except ValueError:
+        print("SparkContext exists! Restartng and trying again.")
+        sc = SparkContext.getOrCreate()
+        sc.stop()
+        sc._gateway.proc.terminate()
+        del sc._gateway
+        del sc._jvm
+        del sc
+
+        return make_application(cluster, conf=conf)
+
+def make_sql_application(cluster, conf=None):
+    sc = make_application(cluster, conf)
+    spark = SparkSession(sc)
+    return spark, sc
+
+
+
+# conf = SparkConf().set("spark.driver.memory", "-4g")
+# gateway = make_gateway(conf)
+# sc = SparkContext(conf=conf, gateway=gateway)

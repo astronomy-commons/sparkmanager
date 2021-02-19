@@ -1,28 +1,27 @@
-FROM astronomycommons/ztf-hub-notebook:spark_extension_test
+FROM jupyter/all-spark-notebook:6d42503c684f
+
+USER $NB_USER
+RUN python -m pip install jupyter-server-proxy
 
 USER root
+COPY sparkmanager /home/jovyan/work/sparkmanager/sparkmanager
+COPY setup.py /home/jovyan/work/sparkmanager
+RUN chown -R $NB_USER:$NB_GID /home/jovyan/work/sparkmanager
 
-RUN mkdir -p /opt/sparkmanager \
- && chown -R $NB_UID:$NB_GID /opt/sparkmanager
+USER $NB_USER
+RUN cd work/sparkmanager \
+ && python -m pip install . 
+    # jupyter-server-proxy
 
-USER $NB_UID
-
-ENV SPARK_MANAGER_DIR /opt/sparkmanager
-COPY sparkmanager $SPARK_MANAGER_DIR/sparkmanager
-COPY setup.py $SPARK_MANAGER_DIR/.
-#RUN git clone https://github.com/stevenstetzler/sparkmanager.git $SPARK_MANAGER_DIR \
-RUN cd $SPARK_MANAGER_DIR \
- && python -m pip install .
-
-ENV IPYTHONDIR /opt/conda/etc/ipython
+# ENV IPYTHONDIR /home/jovyan/.ipython
 
 RUN jupyter nbextension install sparkmanager --py --sys-prefix \
- && jupyter nbextension enable sparkmanager --py --sys-prefix \
- && jupyter serverextension enable sparkmanager --py --sys-prefix \
- && ipython profile create && echo "c.InteractiveShellApp.extensions.append('sparkmanager.kernelextension')" >>  $(ipython profile locate default)/ipython_kernel_config.py
+ && jupyter nbextension enable sparkmanager --py --sys-prefix
+#  && jupyter serverextension enable sparkmanager --py --sys-prefix \
+#  && ipython profile create && echo "c.InteractiveShellApp.extensions.append('sparkmanager.kernelextension')" >>  $(ipython profile locate default)/ipython_kernel_config.py
 
-RUN jupyter nbextension list \
- && jupyter serverextension list
+# RUN jupyter nbextension list 
+#  && jupyter serverextension list
 
-COPY local_cluster $SPARK_MANAGER_DIR/clusters/Local/.
-COPY kube_cluster $SPARK_MANAGER_DIR/clusters/AWS/.
+COPY local_cluster /home/jovyan/.sparkmanager/clusters/Local/.
+COPY kube_cluster /home/jovyan/.sparkmanager/clusters/AWS/.

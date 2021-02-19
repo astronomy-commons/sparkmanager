@@ -1,0 +1,71 @@
+<img id="sparkmanager_sparkLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Apache_Spark_logo.svg/1200px-Apache_Spark_logo.svg.png">
+<button id="sparkmanager_startButton" class="btn btn-default">
+    <span id="sparkmanager_startButtonText">
+        Start
+    </span>
+</button>
+<select id="sparkmanager_clusterSelect" class="form-control select-xs">
+</select>
+<button id="sparkmanager_clusterStatus" class="btn btn-default">
+    <span id="sparkmanager_clusterStatusText">
+        Cores: N/A | Memory: N/A
+    </span>
+</button>
+<button id="sparkmanager_clusterConfig" class="btn btn-default">
+    <span id="sparkmanager_clusterConfigText">
+        Config
+    </span>
+</button>
+<button id="sparkmanager_sparkUI" class="btn btn-default">
+    <span id="sparkmanager_sparkUIText">
+        UI
+    </span>
+</button>
+<div id="sparkmanager_configWindow" class="config-modal" data-keyboard="false" data-backdrop="static" style="display: none;">
+    <!-- Modal content -->
+    <div class="config-modal-content">
+        <span id="sparkmanager_configWindowClose" class="close">&times;</span>
+        <!-- <ul class="nav nav-tabs">
+            <li role="presentation" class="active" id="cluster_config_tab"><a href="#">Configuration</a></li>
+        </ul> -->
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <button class="btn btn-default">
+                            <p>
+                                <strong>
+                                    Local Cluster
+                                </strong>
+                            </p>
+                            <p>
+                                Cores: 4
+                            </p>
+                            <p>
+                                Memory: 4gb
+                            </p>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-default">
+                            <p>
+                                <strong>
+                                    Kubernetes Cluster
+                                </strong>
+                            </p>
+                            <p>
+                                Cores: 128
+                            </p>
+                            <p>
+                                Memory: 4gb
+                            </p>
+                        </button>
+                    </div>
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

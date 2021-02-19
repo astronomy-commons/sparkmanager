@@ -35,7 +35,7 @@ def get_cluster_config_files():
         for cluster in clusters:
             json_path = os.path.join(cluster, "cluster.json")
             if os.path.exists(json_path):
-                print("found cluster:", json_path)
+                # print("found cluster:", json_path)
                 cluster_configs.append(json_path)
     
     return cluster_configs
@@ -49,8 +49,8 @@ def get_cluster_configs():
     for path in cluster_config_files:
         with open(path, "r") as f:
             config_values = json.load(f)
-        name = config_values.get('name')
-        configs[name] = config_values
+        # name = config_values.get('name')
+        configs[path] = config_values
     return configs
 
 def _merge_conf(conf_1, conf_2):

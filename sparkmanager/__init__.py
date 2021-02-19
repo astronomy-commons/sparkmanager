@@ -1,4 +1,10 @@
+from . import core
+from . import application
+from . import nbextension
+
 from .core import SparkCluster, SparkSession, SparkContext, get_clusters
+from .application import start_application
+
 
 def _jupyter_nbextension_paths():
     """Used by 'jupyter nbextension' command to install frontend extension"""

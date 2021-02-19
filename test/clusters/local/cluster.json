@@ -1,0 +1,19 @@
+{
+	"conf": {
+		"spark.driver.cores" : "4",
+		"spark.driver.memory" : "8g",
+		"spark.master" : "local[*]"
+	},
+	"name": "Local",
+	"type": "local",
+	"ui": [
+		{
+			"name": "Cores",
+			"input": "number"
+		},
+		{
+			"name": "Memory (GB)",
+			"input": "number"
+		}
+	]
+}
